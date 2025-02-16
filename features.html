@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusUP</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    /* General Styles */
+    body {
+        font-family: 'Poppins', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+
+    header {
+        background-color: #023020;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-size: 1.8rem;
+    }
+
+    /* Features Section */
+    .features {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .feature {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        transition: transform 0.3s ease;
+    }
+
+    .feature:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature img {
+        width: 100%; /* Ensures the image takes up the full width of the container */
+        height: 200px; /* Fixed height for all images */
+        object-fit: cover; /* Ensures the image covers the area without distortion */
+        border-radius: 8px;
+    }
+
+    .feature h2 {
+        font-size: 1.5rem;
+        color: #023020;
+        margin: 15px 0;
+    }
+
+    .feature p {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .feature button {
+        background-color: #023020;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+    }
+
+    .feature button:hover {
+        background-color: #034735;
+    }
+</style>
+<body>
+    <header>
+        <h1>FocusUP</h1>
+    </header>
+  
+    <section class="features">
+        <div class="feature">
+            <img src="https://mysuki.jp/wp-content/uploads/2016/06/summary.jpg" alt="Summary Notes">
+            <h2>Summary Notes</h2>
+            <p>Upload your PDF, and get clear, concise notes, effortless learning, straight to the point!</p>
+            <button onclick="location.href='summary.html'">Get Notes</button>
+        </div>
+        <div class="feature">
+            <img src="https://png.pngtree.com/png-vector/20231127/ourmid/pngtree-video-green-internet-icon-movie-png-image_10721621.png" alt="Videos">
+            <h2>Videos</h2>
+            <p>Upload your PDF, and let our videos teach you visually for a clearer, faster way to learn!</p>
+            <button onclick="location.href='#'">Watch Videos</button>
+        </div>
+        <div class="feature">
+            <img src="https://previews.123rf.com/images/ionutparvu/ionutparvu1711/ionutparvu171102375/89273433-green-grunge-chalkboard-with-quiz-time-text-illustration-graphic.jpg" alt="Quizzes">
+            <h2>Quizzes</h2>
+            <p>Upload your PDF, and we'll equip you with the best quizzes to help you crush it and score that A+!</p>
+            <button onclick="location.href='quiz.html'">Take Quizzes</button>
+        </div>
+    </section>
+    
+    <script src="script.js"></script>
+</body>
+</html>
