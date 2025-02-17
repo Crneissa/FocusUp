@@ -3,9 +3,9 @@ import os
 import sys
 import pathlib
 import google.generativeai as generativeai
-from app import get_api_key #import the get_api_key function from app.py.
+from utils import get_api_key #import the get_api_key function from utils.py.
 
-generativeai.configure(api_key=get_api_key("API_KEY.txt"))
+generativeai.configure(api_key=get_api_key())
 
 def answer_prompt(pdf_path: str, user_prompt: str) -> str:
     filepath = pathlib.Path(pdf_path)
