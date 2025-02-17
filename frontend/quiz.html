@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes</title>
+    <link rel="stylesheet" href="stylesheets/quiz.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+        <h2 class="logo">FocusUp</h2>
+        <nav>
+            <a href="summary.html">Notes</a>
+            <a href="#">Videos</a>
+            <a href="quiz.html">Quizzes</a>
+        </nav>
+    </div>
+
+    <!-- Sidebar Toggle Button -->
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="title">Test Your Understanding</h1>
+        <div class="quiz-container">
+            <p class="question" style="color: white; background-color: #023020; padding: 10px; border-radius: 5px; text-align: center;">
+                Question will be generated here
+            </p>
+            <button class="option">Option 1</button>
+            <button class="option">Option 2</button>
+            <button class="option">Option 3</button>
+            <button class="option">Option 4</button>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button onclick="previousQuestion()">Previous</button>
+            <button onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("open");
+        }
+    </script>
+</body>
+</html>

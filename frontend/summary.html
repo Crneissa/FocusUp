@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+    <link rel="stylesheet" href="stylesheets/summary.css">
+</head>
+<body>
+
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+        <h2 class="logo">FocusUp</h2>
+        <nav>
+            <a href="summary.html">Notes</a>
+            <a href="#">Videos</a>
+            <a href="quiz.html">Quizzes</a>
+        </nav>
+    </div>
+
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
+    <div class="container">
+        <h1 class="title">Summary</h1>
+        <div id="results"></div>
+
+        <div class="input">
+            <button id="upload-button">🔗</button> <div class="input-container">
+                <input type="text" placeholder="Type a message..." id="messageInput">
+                <button class="send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/summary.js"></script>
+
+</body>
+</html>
