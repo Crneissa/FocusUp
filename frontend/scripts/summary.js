@@ -32,15 +32,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.message) {
-                    resultsDiv.innerHTML = data.message;
+                    resultsDiv.innerHTML += `<div class="message">${data.message}</div>`;
                     pdfData = data.pdf_data;
                 } else {
-                    resultsDiv.innerHTML = "Error processing PDF.";
+                    resultsDiv.innerHTML += `<div class="message">Error processing PDF.</div>`;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                resultsDiv.innerHTML = "An error occurred.";
+                resultsDiv.innerHTML += `<div class="message">An error occurred.</div>`;
             });
         }
     });
@@ -48,6 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".send-btn").addEventListener("click", function(){
         const message = document.getElementById("messageInput").value;
         if(message && pdfData){
+            resultsDiv.innerHTML += `<div class="message user-message">${message}</div>`;
+            document.getElementById("messageInput").value = "";
             fetch('/ask_question',{
                 method: 'POST',
                 headers: {
@@ -58,15 +60,22 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data=>{
                 if(data.answer){
-                    resultsDiv.innerHTML = data.answer;
+                    resultsDiv.innerHTML += `<div class="message">${data.answer}</div>`;
                 } else {
-                    resultsDiv.innerHTML = "there was an error getting an answer.";
+                    resultsDiv.innerHTML += `<div class="message">there was an error getting an answer.</div>`;
                 }
             })
             .catch(error=>{
                 console.error("error:", error);
-                resultsDiv.innerHTML = "an error occurred.";
+                resultsDiv.innerHTML += `<div class="message">An error occurred.</div>`;
             });
         }
+    });
+
+    // Auto-expand textarea
+    const messageInput = document.getElementById("messageInput");
+    messageInput.addEventListener("input", function() {
+        this.style.height = "auto";
+        this.style.height = (this.scrollHeight) + "px";
     });
 });

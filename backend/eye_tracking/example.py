@@ -4,7 +4,7 @@ Check the README.md for complete documentation.
 """
 
 import cv2
-from eye_tracking.gaze_tracking import GazeTracking
+from gaze_tracking import GazeTracking
 import time
 
 

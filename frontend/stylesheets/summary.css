@@ -1,37 +1,48 @@
 /* General Styles */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Nunito Sans', sans-serif; /* Apply Nunito Sans to body */
     background-color: white;
     color: black;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
     flex-direction: column;
-    position: relative;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    width: 100%;
+    text-align: center;
+    padding: 3vh 0;
+}
+
+.title {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
 }
 
 /* Sidebar */
 .sidebar {
     position: fixed;
     top: 0;
-    left: -250px;
+    left: 0;
     width: 250px;
     height: 100%;
     background-color: #023020;
     padding-top: 20px;
-    transition: 0.3s;
-    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+    transform: translateX(-250px);
+    transition: transform 0.6s ease-in-out;
+    box-shadow: 10px 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar.open {
-    left: 0;
+    transform: translateX(0);
 }
 
 .sidebar .close-btn {
     position: absolute;
-    top: 10px;
+    top: 32px;
     right: 15px;
     background: none;
     border: none;
@@ -59,7 +70,7 @@ body {
     color: white;
     padding: 10px 0;
     display: block;
-    transition: 0.3s;
+    transition: color 0.3s ease-in-out;
 }
 
 .sidebar nav a:hover {
@@ -77,55 +88,115 @@ body {
     font-size: 24px;
     padding: 10px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 /* Main Content */
 .container {
-    text-align: center;
-    width: 100%;
+    width: 80%;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: absolute;
-    top: 40%;
-    transform: translateY(-50%);
+    margin: 2vh auto;
+    flex-grow: 1;
+    justify-content: space-between;
 }
 
-.title {
-    font-size: 36px;
-    font-weight: bold;
-    margin-bottom: 40px;
+/* Chat Container */
+.chat-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 150px); /* Adjust based on header height */
+    padding-bottom: 70px; /* Ensures messages don't get hidden behind input */
+}
+
+/* Message Container */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    overflow-y: auto;
 }
 
 /* Input Box */
 .input-container {
+    position: fixed;
+    bottom: 50px;
+
     display: flex;
     align-items: center;
     background: #f0f0f0;
-    padding: 10px;
-    border-radius: 8px;
-    width: 350px;
+    padding: 1vh;
+    border-radius: 50px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.input-container input {
+#upload-button {
+    background: none;
+    border: 2px solid #ccc;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-left: 3%;
+    margin-right: 1vw;
+    padding: 0.5vh 1vw;
+    border-radius: 5px;
+}
+
+.input-container textarea {
     flex: 1;
     border: none;
     outline: none;
-    padding: 8px;
-    font-size: 16px;
+    padding: 1vh;
+    font-size: 1em;
     background: transparent;
+    resize: none;
+    overflow: hidden;
+    min-height: 40px;
+    max-height: 120px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    width: 100%;
+    overflow-x: hidden;
+    font-family: 'Nunito Sans', sans-serif;
 }
 
 .send-btn {
     background: #023020;
+    font-size: large;
+    font-weight: bold;
     color: white;
     border: none;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 10px 15px;
+    border-radius: 20px;
     cursor: pointer;
+    margin: 5px;
+    transition: background 0.3s ease-in-out;
 }
 
 .send-btn:hover {
-    background: darkgreen;
+    background: #026020;
 }
+
+/* Message Styles */
+.message {
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 20px;
+    align-self: flex-start;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.message.user-message {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+}
+

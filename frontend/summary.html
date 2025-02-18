@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary</title>
     <link rel="stylesheet" href="stylesheets/summary.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -12,22 +15,27 @@
         <button class="close-btn" onclick="toggleSidebar()">×</button>
         <h2 class="logo">FocusUp</h2>
         <nav>
-            <a href="summary.html">Notes</a>
+            <a href="/summary">Notes</a>
             <a href="#">Videos</a>
-            <a href="quiz.html">Quizzes</a>
+            <a href="/quiz">Quizzes</a>
         </nav>
     </div>
 
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
-    <div class="container">
+    <header>
         <h1 class="title">Summary</h1>
-        <div id="results"></div>
+    </header>
 
-        <div class="input">
-            <button id="upload-button">🔗</button> <div class="input-container">
-                <input type="text" placeholder="Type a message..." id="messageInput">
-                <button class="send-btn">Send</button>
+    <div class="container">
+        <div class="chat-container">
+            <div id="results" class="message-container">message</div>
+            <div class="input">
+                <div class="input-container">
+                    <button id="upload-button">🔗</button>
+                    <textarea placeholder="Type a message..." id="messageInput"></textarea>
+                    <button class="send-btn">↑</button>
+                </div>
             </div>
         </div>
     </div>
