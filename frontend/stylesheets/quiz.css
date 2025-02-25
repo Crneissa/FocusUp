@@ -19,10 +19,14 @@ body {
     left: -250px;
     width: 250px;
     height: 100%;
-    background-color: #023020;
+    background-color: #368BC1;
     padding-top: 20px;
-    transition: 0.3s;
+    transition: left 0.3s ease-in-out;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 1000; /* Ensure sidebar is above other content */
 }
 
 .sidebar.open {
@@ -60,23 +64,32 @@ body {
     padding: 10px 0;
     display: block;
     transition: 0.3s;
+    position: relative; /* Ensure links are clickable */
+    z-index: 1001; /* Ensure links are above other content */
 }
 
 .sidebar nav a:hover {
     color: #a8e6cf;
 }
+
 /* Menu Button */
 .menu-btn {
     position: fixed;
     top: 20px;
     left: 20px;
-    background-color: #023020;
+    background-color: #368BC1;
     color: white;
     border: none;
     font-size: 24px;
     padding: 10px;
     cursor: pointer;
     border-radius: 5px;
+    transition: 0.3s;
+    z-index: 1000; /* Ensure button is above other content */
+}
+
+.menu-btn:hover {
+    transform: scale(1.1);
 }
 
 /* Main Content */
@@ -99,7 +112,7 @@ body {
 
 /* Quiz Box */
 .quiz-container {
-    background: #023020;
+    background: #368BC1;
     padding: 20px;
     border-radius: 10px;
     width: 400px;
@@ -109,6 +122,11 @@ body {
 .question {
     font-size: 20px;
     margin-bottom: 20px;
+    color: white;
+    background-color: #368BC1;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
 }
 
 .option {
@@ -121,28 +139,107 @@ body {
     border-radius: 5px;
     cursor: pointer;
     text-align: left;
+    transition: 0.3s;
 }
 
 .option:hover {
-    background: #d4edda;
+    background: #87AFC7;
+    transform: scale(1.05);
 }
 
-/* Navigation Buttons */
+.progress-container {
+    margin-top: 20px;
+    width: 80%;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar {
+    width: 0%;
+    height: 20px;
+    background: #246A91;
+    text-align: center;
+    color: white;
+    line-height: 20px;
+    font-weight: bold;
+    transition: width 0.5s;
+}
+
 .nav-buttons {
     margin-top: 20px;
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 
 .nav-buttons button {
-    background: #023020;
+    background: #368BC1;
     color: white;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
 .nav-buttons button:hover {
-    background: darkgreen;
+    background: #87AFC7;
+}
+
+.quiz-prompt {
+    background: #368BC1;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+}
+
+.quiz-prompt label {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.quiz-prompt input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.quiz-prompt button {
+    background: white;
+    color: #368BC1;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.quiz-prompt button:hover {
+    background: #87AFC7;
+    color: white;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.3s;
+}
+
+.option:hover {
+    background: #87AFC7;
+    transform: scale(1.05);
 }

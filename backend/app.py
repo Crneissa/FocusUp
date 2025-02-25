@@ -3,7 +3,7 @@ import os
 import sys
 import pathlib
 import google.generativeai as generativeai
-import summary_logic, eye_tracker, utils #import your backend logic files.
+import summary_logic, quiz_logic, eye_tracker, utils #import your backend logic files.
 from dotenv import load_dotenv
 
 
@@ -21,6 +21,12 @@ app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.dirname
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
 eye_trackers = {}
+
+UPLOAD_FOLDER = 'uploads'  # Set the uploads directory
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Ensure the uploads directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def serve_index():
@@ -41,9 +47,47 @@ def serve_summary():
             print(f"Error starting eye tracker: {e}")
     return render_template('summary.html')
 
+@app.route('/quiz')  # Add this route for quiz.html
+def serve_quiz():
+    return render_template('quiz.html') 
+
 @app.route('/<path:filename>')
 def serve_static(filename):
     return send_from_directory(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend'), filename)
+
+@app.route('/upload_pdf', methods=['POST'])
+def upload_pdf():
+    if 'pdf' in request.files:
+        pdf_file = request.files['pdf']
+        if pdf_file.filename.endswith('.pdf'):
+            try:
+                # Save the PDF to the uploads directory
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], pdf_file.filename)
+                pdf_file.save(filepath)
+
+                # Process the PDF (e.g., extract text, store in session)
+                pdf_data = summary_logic.process_pdf_data(filepath)  # Pass the filepath
+                session['pdf_filename'] = pdf_file.filename # Store filename in session
+                return jsonify({'message': 'PDF uploaded successfully!'})
+            except Exception as e:
+                print(f"Error uploading PDF: {e}")
+                return jsonify({'error': 'Error uploading PDF'})
+        else:
+            return jsonify({'error': 'Invalid file type'})
+    return jsonify({'error': 'No file uploaded'})
+
+@app.route('/get_pdf_data', methods=['GET'])
+def get_pdf_data():
+    filename = session.get('pdf_filename')
+    if filename:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        try:
+            pdf_data = summary_logic.get_pdf_data(filepath) # New function in summary_logic.py
+            return jsonify({'pdf_data': pdf_data})
+        except Exception as e:
+            print(f"Error getting PDF data: {e}")
+            return jsonify({'error': 'Error getting PDF data'})
+    return jsonify({'error': 'No PDF data found'})
 
 @app.route('/process_pdf', methods=['POST'])
 def process_pdf():
@@ -52,6 +96,29 @@ def process_pdf():
 @app.route('/ask_question', methods=['POST'])
 def ask_question():
     return summary_logic.ask_question()
+
+@app.route('/generate_quiz')
+def generate_quiz_route():
+    print("generate_quiz_route called") # Add this
+    num_questions = int(request.args.get('num_questions', 5))
+    filename = session.get('pdf_filename')
+    if filename:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        pdf_data = summary_logic.get_pdf_data(filepath)  # Call from summary_logic
+    else:
+        pdf_data = None
+
+    if not pdf_data:
+        return jsonify({"error": "No PDF data available"}), 400
+
+    quiz_data, error_message = quiz_logic.generate_quiz(pdf_data, num_questions)  # Call from quiz_logic
+
+    if quiz_data: # Check if quiz_data is not None
+        print(f"Data being sent: {quiz_data}") # Add this line
+        return jsonify(quiz_data) # Send the dictionary that contains the questions
+    else:
+        return jsonify({"error": error_message}), 500
+
 
 @app.route('/strike/<user_id>', methods=['POST'])
 def strike(user_id):
