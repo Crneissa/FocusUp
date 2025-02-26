@@ -6,3 +6,5 @@ opencv-python==4.10.0.82
 setuptools==70.0.0
 python-dotenv
 PyPDF2
+flask-socketio
+gtts

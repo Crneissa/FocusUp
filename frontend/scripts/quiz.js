@@ -1,9 +1,48 @@
-// quiz.js
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("open");
 }
 
+function playStrikeAudio(audioFile) {
+    console.log("playing strike audio");
+    const audio = new Audio(`/static/audio_cache/${audioFile}`);
+    audio.addEventListener("loadeddata", () => {
+        console.log("Audio loaded:", audioFile);
+        audio.play().then(() => {
+            console.log("Audio playback started successfully.");
+        }).catch(error => {
+            console.error("Error playing audio:", error);
+        });
+    });
+    audio.addEventListener("error", (error) => {
+        console.error("Error loading audio:", audioFile, error);
+    });
+}
+
+let lastStrikeCount = 0; // Track the last strike count
+
+function checkForStrikes(userId) {
+    fetch(`/strike/${userId}`, {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success" && data.strikes > 0) {
+            if (data.strikes > lastStrikeCount) {
+                console.log(`New strike detected: ${data.strikes} strikes.`);
+                playStrikeAudio(data.audio_file);
+                lastStrikeCount = data.strikes; // Update the last strike count
+            } else {
+                console.log("No new strikes detected.");
+            }
+        } else {
+            console.log("No strikes detected.");
+        }
+    })
+    .catch(error => {
+        console.error("Error checking for strikes:", error);
+    });
+}
 document.addEventListener("DOMContentLoaded", () => {
     const numQuestionsInput = document.getElementById("num-questions");
     const startQuizButton = document.getElementById("start-quiz");
@@ -17,7 +56,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let questions = [];
     let currentQuestion = 0;
-    let userAnswers = []; // Store user's answers
+    let userAnswers = [];
+
+    const audio = new Audio();
+    audio.play().then(() => {
+        console.log("Audio playback allowed by browser.");
+    }).catch(error => {
+        console.error("Autoplay blocked by browser:", error);
+    });
+
+    // Fetch user ID
+    fetch('/get_user_id')
+        .then(response => response.json())
+        .then(data => {
+            userId = data.user_id;
+            console.log("User ID:", userId);
+
+            // Start polling for strikes every 5 seconds
+            setInterval(() => {
+                checkForStrikes(userId);
+            }, 5000); // Check every 5 seconds
+        });
 
     startQuizButton.addEventListener("click", () => {
         const numQuestions = parseInt(numQuestionsInput.value, 10);
@@ -29,10 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch('/generate_quiz?num_questions=' + numQuestions)
             .then(response => response.json())
             .then(data => {
-                console.log("Data Received:", data); // Add this line
+                console.log("Data Received:", data);
 
                 if (data.error) {
                     alert(data.error);
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
                     return;
                 } else if (data.questions) {
                     questions = data.questions;
@@ -66,17 +128,16 @@ document.addEventListener("DOMContentLoaded", () => {
             optionButton.classList.add("option");
             optionButton.textContent = option;
 
-            // Highlight the selected option (if any)
             if (userAnswers[index] === option) {
                 optionButton.classList.add("selected");
             }
-            console.log("Question Correct Answer:", question.correctAnswer); // Add this line
+            console.log("Question Correct Answer:", question.correctAnswer);
 
             optionButton.addEventListener("click", () => {
-                userAnswers[index] = option; // Store the user's answer
-                showQuestion(index); // Refresh to highlight selection
+                userAnswers[index] = option;
+                showQuestion(index);
 
-                handleAnswerSelection(option, question.correctAnswer, optionButton); // Pass the button
+                handleAnswerSelection(option, question.correctAnswer, optionButton);
             });
             optionsContainer.appendChild(optionButton);
         });
@@ -87,22 +148,26 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleAnswerSelection(selectedOption, correctAnswer, optionButton) {
         console.log("Selected Option:", selectedOption);
         console.log("Correct Answer:", correctAnswer);
-    
-        // Find the question object
-        const questionIndex = questions.findIndex(q => q.options.includes(selectedOption));
-        if (questionIndex === -1) {
-            console.error("Question not found for selected option:", selectedOption);
-            return;
-        }
-        const question = questions[questionIndex];
-    
-        // Get the correct answer text
-        const correctAnswerText = question.options[correctAnswer.charCodeAt(0) - 65];
-    
-        if (selectedOption.trim().toLowerCase() === correctAnswerText.trim().toLowerCase()) {
+
+        // Clear previous borders
+        const options = optionsContainer.querySelectorAll(".option");
+        options.forEach(option => {
+            option.style.border = "2px solid transparent"; // Reset border
+        });
+
+        // Highlight the selected option
+        optionButton.style.border = "2px solid red"; // Assume incorrect by default
+
+        // Find the correct answer index
+        const correctAnswerIndex = correctAnswer.charCodeAt(0) - 65; // Convert "A", "B", etc., to 0, 1, etc.
+        const correctOption = options[correctAnswerIndex];
+
+        // Highlight the correct answer
+        correctOption.style.border = "2px solid green";
+
+        // If the selected option is correct, highlight it in green
+        if (selectedOption.trim().toLowerCase() === correctOption.textContent.trim().toLowerCase()) {
             optionButton.style.border = "2px solid green";
-        } else {
-            optionButton.style.border = "2px solid red";
         }
     }
 
@@ -120,7 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     nextButton.addEventListener("click", () => {
         currentQuestion++;
-        if (currentQuestion >= questions.length) currentQuestion = questions.length - 1;
+        if (currentQuestion >= questions.length) {
+            handleQuizCompletion();
+            currentQuestion = questions.length - 1;
+        }
         showQuestion(currentQuestion);
     });
 
@@ -130,4 +198,20 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleSidebar();
         });
     });
+
+
+    function handleQuizCompletion() {
+        fetch('/reset_strikes')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    console.log("Strikes reset successfully.");
+                } else {
+                    console.error("Error resetting strikes.");
+                }
+            })
+            .catch(error => {
+                console.error("Error resetting strikes:", error);
+            });
+    }
 });

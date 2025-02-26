@@ -12,13 +12,77 @@ function scrollToBottom() {
     });
 }
 
+function playStrikeAudio(audioFile) {
+    console.log("playing strike audio");
+    const audio = new Audio(`/static/audio_cache/${audioFile}`);
+    audio.addEventListener("loadeddata", () => {
+        console.log("Audio loaded:", audioFile);
+        audio.play().then(() => {
+            console.log("Audio playback started successfully.");
+        }).catch(error => {
+            console.error("Error playing audio:", error);
+        });
+    });
+    audio.addEventListener("error", (error) => {
+        console.error("Error loading audio:", audioFile, error);
+    });
+}
+
+let lastStrikeCount = 0; // Track the last strike count
+
+function checkForStrikes(userId) {
+    fetch(`/strike/${userId}`, {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success" && data.strikes > 0) {
+            if (data.strikes > lastStrikeCount) {
+                console.log(`New strike detected: ${data.strikes} strikes.`);
+                playStrikeAudio(data.audio_file);
+                lastStrikeCount = data.strikes; // Update the last strike count
+            } else {
+                console.log("No new strikes detected.");
+            }
+        } else {
+            console.log("No strikes detected.");
+        }
+    })
+    .catch(error => {
+        console.error("Error checking for strikes:", error);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const resultsDiv = document.getElementById("results");
     const title = document.querySelector('.title');
     const container = document.querySelector('.container');
     const inputContainer = document.querySelector('.input-container');
     let pdfData = null;
+    let userId;
 
+    // Request permission to play audio
+    const audio = new Audio();
+    audio.play().then(() => {
+        console.log("Audio playback allowed by browser.");
+    }).catch(error => {
+        console.error("Autoplay blocked by browser:", error);
+    });
+
+    // Fetch user ID
+    fetch('/get_user_id')
+        .then(response => response.json())
+        .then(data => {
+            userId = data.user_id;
+            console.log("User ID:", userId);
+
+            // Start polling for strikes every 5 seconds
+            setInterval(() => {
+                checkForStrikes(userId);
+            }, 5000); // Check every 5 seconds
+        });
+
+    // Fetch PDF data
     fetch('/get_pdf_data')
         .then(response => response.json())
         .then(data => {
@@ -35,6 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         });
 
+    // Handle message input
     document.querySelector(".send-btn").addEventListener("click", function () {
         const message = document.getElementById("messageInput").value;
         if (message && pdfData) {
@@ -67,8 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         formattedAnswer = formattedAnswer.replace(/\d+\. (.*?)\n/g, "<ol><li>$1</li></ol>");
 
                         resultsDiv.innerHTML += `<div class="message bot-message">${formattedAnswer}</div>`;
-                        scrollToBottom(); // Call scrollToBottom() AFTER adding the message
-
+                        scrollToBottom();
                     } else {
                         resultsDiv.innerHTML += `<div class="message">There was an error getting an answer.</div>`;
                     }
@@ -80,12 +144,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Handle message input height
     const messageInput = document.getElementById("messageInput");
     messageInput.addEventListener("input", function () {
         this.style.height = "auto";
         this.style.height = (this.scrollHeight) + "px";
     });
 
+    // Handle Enter key press
     messageInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
