@@ -1,7 +1,7 @@
 /* General Styles */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Nunito Sans', sans-serif; /* Apply Nunito Sans to body */
     background-color: white;
     color: black;
     display: flex;
@@ -19,7 +19,7 @@ body {
     left: -250px;
     width: 250px;
     height: 100%;
-    background-color: #368BC1;
+    background-color: #102020;
     padding-top: 20px;
     transition: left 0.3s ease-in-out;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
@@ -72,12 +72,16 @@ body {
     color: #a8e6cf;
 }
 
+h1, a{
+    text-decoration: none;
+}
+
 /* Menu Button */
 .menu-btn {
     position: fixed;
     top: 20px;
     left: 20px;
-    background-color: #368BC1;
+    background-color: #102020;
     color: white;
     border: none;
     font-size: 24px;
@@ -112,7 +116,7 @@ body {
 
 /* Quiz Box */
 .quiz-container {
-    background: #368BC1;
+    background: #4C787E;
     padding: 20px;
     border-radius: 10px;
     width: 400px;
@@ -123,7 +127,7 @@ body {
     font-size: 20px;
     margin-bottom: 20px;
     color: white;
-    background-color: #368BC1;
+    background-color: #4C787E;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
@@ -159,7 +163,7 @@ body {
 .progress-bar {
     width: 0%;
     height: 20px;
-    background: #246A91;
+    background: #4C787E;
     text-align: center;
     color: white;
     line-height: 20px;
@@ -174,7 +178,7 @@ body {
 }
 
 .nav-buttons button {
-    background: #368BC1;
+    background: #4C787E;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -188,7 +192,7 @@ body {
 }
 
 .quiz-prompt {
-    background: #368BC1;
+    background: #4C787E;
     padding: 20px;
     border-radius: 10px;
     width: 400px;
@@ -213,7 +217,7 @@ body {
 
 .quiz-prompt button {
     background: white;
-    color: #368BC1;
+    color: #4C787E;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;

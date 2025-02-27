@@ -5,17 +5,22 @@ document.querySelector('.upload-btn').addEventListener('click', function() {
 
 document.addEventListener('DOMContentLoaded', () => {
     const pdfUpload = document.getElementById('pdfUpload');
-    const getStartedButton = document.querySelector('.upload-btn'); // Select the "Get Started" button
-    const uploadContainer = document.querySelector('.upload-container'); // Select the upload container
+    const summaryLink = document.getElementById('summary-link');
+    const quizLink = document.getElementById('quiz-link');
 
-    // Initially hide the upload container
-    uploadContainer.style.display = 'none';
-
-    // Event listener for the "Get Started" button
-    getStartedButton.addEventListener('click', () => {
-        uploadContainer.style.display = 'block'; // Show the upload container
+    summaryLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (confirm('This program will use your camera. Do you want to continue?')) {
+            window.location.href = '/summary';
+        }
     });
 
+    quizLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (confirm('This program will use your camera. Do you want to continue?')) {
+            window.location.href = '/quiz';
+        }
+    });
 
     pdfUpload.addEventListener('change', (event) => {
         const file = event.target.files[0];

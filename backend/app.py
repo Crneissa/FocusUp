@@ -20,7 +20,7 @@ app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.dirname
 
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
-eye_trackers = {}
+eye_trackers = {}  # Global dictionary to store eye tracker instances
 
 UPLOAD_FOLDER = 'uploads'  # Set the uploads directory
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -37,12 +37,17 @@ def serve_summary():
     if 'user_id' not in session:
         session['user_id'] = os.urandom(16).hex()
     user_id = session['user_id']
+
+    # Initialize or reuse the eye tracker
     if user_id not in eye_trackers:
         try:
             eye_trackers[user_id] = eye_tracker.EyeTracker(user_id)
             eye_trackers[user_id].start_tracking()
         except Exception as e:
             print(f"Error starting eye tracker: {e}")
+    else:
+        print(f"Reusing existing eye tracker for user {user_id}")
+
     return render_template('summary.html', user_id=user_id)
 
 @app.route('/quiz')
@@ -52,12 +57,17 @@ def serve_quiz():
     if 'user_id' not in session:
         session['user_id'] = os.urandom(16).hex()
     user_id = session['user_id']
+
+    # Initialize or reuse the eye tracker
     if user_id not in eye_trackers:
         try:
             eye_trackers[user_id] = eye_tracker.EyeTracker(user_id)
             eye_trackers[user_id].start_tracking()
         except Exception as e:
             print(f"Error starting eye tracker: {e}")
+    else:
+        print(f"Reusing existing eye tracker for user {user_id}")
+
     return render_template('quiz.html', user_id=user_id)
 
 @app.route('/<path:filename>')
@@ -171,6 +181,20 @@ def serve_home():
             eye_trackers[user_id].stop_tracking()
             del eye_trackers[user_id]
     return render_template("home.html")
+
+@app.route('/stop_eye_tracker', methods=['POST'])
+def stop_eye_tracker():
+    user_id = session.get('user_id')
+    if user_id and user_id in eye_trackers:
+        try:
+            eye_trackers[user_id].stop_tracking()  # Assuming you have a stop_tracking method
+            del eye_trackers[user_id]
+            return jsonify({'status': 'success', 'message': 'Eye tracker stopped.'})
+        except Exception as e:
+            print(f"Error stopping eye tracker: {e}")
+            return jsonify({'status': 'error', 'message': f'Error stopping eye tracker: {e}'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Eye tracker not running for this user.'})
 
 @app.route('/audio_cache/<filename>')
 def serve_audio(filename):

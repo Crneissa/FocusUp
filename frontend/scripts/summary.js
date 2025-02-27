@@ -28,7 +28,8 @@ function playStrikeAudio(audioFile) {
     });
 }
 
-let lastStrikeCount = 0; // Track the last strike count
+// Initialize lastStrikeCount from sessionStorage or set it to 0
+let lastStrikeCount = parseInt(sessionStorage.getItem("lastStrikeCount")) || 0;
 
 function checkForStrikes(userId) {
     fetch(`/strike/${userId}`, {
@@ -41,6 +42,7 @@ function checkForStrikes(userId) {
                 console.log(`New strike detected: ${data.strikes} strikes.`);
                 playStrikeAudio(data.audio_file);
                 lastStrikeCount = data.strikes; // Update the last strike count
+                sessionStorage.setItem("lastStrikeCount", lastStrikeCount); // Persist in sessionStorage
             } else {
                 console.log("No new strikes detected.");
             }
@@ -75,6 +77,21 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             userId = data.user_id;
             console.log("User ID:", userId);
+
+            // Fetch the current strike count from the backend
+            fetch(`/strike/${userId}`, {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success" && data.strikes > 0) {
+                    lastStrikeCount = data.strikes; // Initialize lastStrikeCount with the current strike count
+                    sessionStorage.setItem("lastStrikeCount", lastStrikeCount); // Persist in sessionStorage
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching current strike count:", error);
+            });
 
             // Start polling for strikes every 5 seconds
             setInterval(() => {
@@ -121,26 +138,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 body: JSON.stringify({ question: message, pdf_data: pdfData }),
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.answer) {
-                        let formattedAnswer = data.answer;
+            .then(response => response.json())
+            .then(data => {
+                if (data.answer) {
+                    let formattedAnswer = data.answer;
 
-                        formattedAnswer = formattedAnswer.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
-                        formattedAnswer = formattedAnswer.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-                        formattedAnswer = formattedAnswer.replace(/\* (.*?)\n/g, "<ul><li>$1</li></ul>");
-                        formattedAnswer = formattedAnswer.replace(/\d+\. (.*?)\n/g, "<ol><li>$1</li></ol>");
+                    formattedAnswer = formattedAnswer.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+                    formattedAnswer = formattedAnswer.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+                    formattedAnswer = formattedAnswer.replace(/\* (.*?)\n/g, "<ul><li>$1</li></ul>");
+                    formattedAnswer = formattedAnswer.replace(/\d+\. (.*?)\n/g, "<ol><li>$1</li></ol>");
 
-                        resultsDiv.innerHTML += `<div class="message bot-message">${formattedAnswer}</div>`;
-                        scrollToBottom();
-                    } else {
-                        resultsDiv.innerHTML += `<div class="message">There was an error getting an answer.</div>`;
-                    }
-                })
-                .catch(error => {
-                    console.error("Error asking question:", error);
-                    resultsDiv.innerHTML += `<div class="message">An error occurred asking the question.</div>`;
-                });
+                    resultsDiv.innerHTML += `<div class="message bot-message">${formattedAnswer}</div>`;
+                    scrollToBottom();
+                } else {
+                    resultsDiv.innerHTML += `<div class="message">There was an error getting an answer.</div>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error asking question:", error);
+                resultsDiv.innerHTML += `<div class="message">An error occurred asking the question.</div>`;
+            });
         }
     });
 
@@ -158,4 +175,30 @@ document.addEventListener("DOMContentLoaded", function () {
             document.querySelector(".send-btn").click();
         }
     });
+
+    const homeLink = document.querySelector('a[onclick="location.href=\'/home\'"]'); // Modified selector
+
+    if (homeLink) {
+        homeLink.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            fetch('/stop_eye_tracker', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Eye tracker stopped.');
+                    window.location.href = '/home'; // Redirect to /home
+                } else {
+                    console.error('Failed to stop eye tracker:', data.message);
+                    window.location.href = '/home'; // Redirect even on error
+                }
+            })
+            .catch(error => {
+                console.error('Error stopping eye tracker:', error);
+                window.location.href = '/home'; // Redirect even on error
+            });
+        });
+    }
 });

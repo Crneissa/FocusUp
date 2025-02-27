@@ -19,7 +19,8 @@ function playStrikeAudio(audioFile) {
     });
 }
 
-let lastStrikeCount = 0; // Track the last strike count
+// Initialize lastStrikeCount from sessionStorage or set it to 0
+let lastStrikeCount = parseInt(sessionStorage.getItem("lastStrikeCount")) || 0;
 
 function checkForStrikes(userId) {
     fetch(`/strike/${userId}`, {
@@ -32,6 +33,7 @@ function checkForStrikes(userId) {
                 console.log(`New strike detected: ${data.strikes} strikes.`);
                 playStrikeAudio(data.audio_file);
                 lastStrikeCount = data.strikes; // Update the last strike count
+                sessionStorage.setItem("lastStrikeCount", lastStrikeCount); // Persist in sessionStorage
             } else {
                 console.log("No new strikes detected.");
             }
@@ -43,6 +45,7 @@ function checkForStrikes(userId) {
         console.error("Error checking for strikes:", error);
     });
 }
+
 document.addEventListener("DOMContentLoaded", () => {
     const numQuestionsInput = document.getElementById("num-questions");
     const startQuizButton = document.getElementById("start-quiz");
@@ -71,6 +74,21 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             userId = data.user_id;
             console.log("User ID:", userId);
+
+            // Fetch the current strike count from the backend
+            fetch(`/strike/${userId}`, {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success" && data.strikes > 0) {
+                    lastStrikeCount = data.strikes; // Initialize lastStrikeCount with the current strike count
+                    sessionStorage.setItem("lastStrikeCount", lastStrikeCount); // Persist in sessionStorage
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching current strike count:", error);
+            });
 
             // Start polling for strikes every 5 seconds
             setInterval(() => {
@@ -163,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const correctOption = options[correctAnswerIndex];
 
         // Highlight the correct answer
-        correctOption.style.border = "2px solid green";
+        correctOption.style.border = "4px solid green";
 
         // If the selected option is correct, highlight it in green
         if (selectedOption.trim().toLowerCase() === correctOption.textContent.trim().toLowerCase()) {
@@ -199,13 +217,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-
     function handleQuizCompletion() {
         fetch('/reset_strikes')
             .then(response => response.json())
             .then(data => {
                 if (data.status === "success") {
                     console.log("Strikes reset successfully.");
+                    lastStrikeCount = 0; // Reset lastStrikeCount
+                    sessionStorage.setItem("lastStrikeCount", lastStrikeCount); // Update sessionStorage
                 } else {
                     console.error("Error resetting strikes.");
                 }
@@ -213,5 +232,31 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => {
                 console.error("Error resetting strikes:", error);
             });
+    }
+
+    const homeLink = document.querySelector('a[onclick="location.href=\'/home\'"]'); // Modified selector
+
+    if (homeLink) {
+        homeLink.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            fetch('/stop_eye_tracker', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Eye tracker stopped.');
+                    window.location.href = '/home'; // Redirect to /home
+                } else {
+                    console.error('Failed to stop eye tracker:', data.message);
+                    window.location.href = '/home'; // Redirect even on error
+                }
+            })
+            .catch(error => {
+                console.error('Error stopping eye tracker:', error);
+                window.location.href = '/home'; // Redirect even on error
+            });
+        });
     }
 });
