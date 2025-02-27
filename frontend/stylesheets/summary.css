@@ -16,7 +16,7 @@ body {
             left: -250px;
             width: 250px;
             height: 100%;
-            background-color: #102020;
+            background-color: #4C787E;
             padding-top: 20px;
             transition: 0.3s;
             box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
@@ -72,7 +72,7 @@ body {
             position: fixed;
             top: 20px;
             left: 20px;
-            background-color: #102020;
+            background-color: #4C787E;
             color: white;
             border: none;
             font-size: 24px;
@@ -131,7 +131,7 @@ body {
 }
 
 .message.bot-message {
-    background-color: #4C787E;
+    background-color: #92C7C7;
     color: white;
     float: left;
     margin-right: 30%;
@@ -168,7 +168,7 @@ body {
 }
 
 .send-btn {
-    background: #102020;
+    background: #4C787E;
     color: white;
     border: none;
     padding: 10px;
@@ -178,7 +178,7 @@ body {
 }
 
 .send-btn:hover {
-    background: #4C787E;
+    background: #92C7C7;
 }
 
 /* Auto-scroll behavior */
